@@ -129,10 +129,12 @@ function ChatInner() {
         </div>
         <div className="text-sm text-slate-500 flex items-center gap-2">
           {session ? (
-            remaining !== null && (
+            remaining !== null ? (
               <span className={`px-3 py-1.5 rounded-full text-xs font-medium ${remaining > 3 ? 'bg-blue-50 text-blue-700' : remaining > 0 ? 'bg-amber-50 text-amber-700' : 'bg-red-50 text-red-700'}`}>
                 {remaining > 0 ? `${remaining} domande rimaste` : 'Limite raggiunto'}
               </span>
+            ) : (
+              <span className="px-3 py-1.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700">💎 Premium</span>
             )
           ) : (
             <button onClick={() => router.push('/login')} className="px-4 py-1.5 bg-blue-700 text-white text-xs rounded-full font-medium hover:bg-blue-800 transition-colors">

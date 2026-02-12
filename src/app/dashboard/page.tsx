@@ -106,7 +106,7 @@ export default function Dashboard() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Domande oggi', value: `${todayQuestions}/7`, icon: '💬', sub: `Piano ${profile?.piano || 'free'}` },
+          { label: 'Domande oggi', value: profile?.piano === 'premium' ? `${todayQuestions}` : `${todayQuestions}/7`, icon: '💬', sub: profile?.piano === 'premium' ? 'Piano premium — illimitate' : `Piano free` },
           { label: 'Documenti caricati', value: String(profile?._count?.documents || documents.length), icon: '📄', sub: `${documents.length} totali` },
           { label: 'Prossima scadenza', value: '16 Feb', icon: '📅', sub: 'IVA mensile' },
           { label: 'Piano attivo', value: profile?.piano === 'premium' ? 'Premium' : 'Free', icon: '⭐', sub: profile?.piano === 'premium' ? 'Piano attivo' : 'Passa a Premium' },
