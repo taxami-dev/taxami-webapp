@@ -7,6 +7,7 @@ import Link from 'next/link';
 interface Profile {
   name: string | null;
   piano: string;
+  telegramId: string | null;
   _count: { documents: number; questions: number };
 }
 
@@ -59,6 +60,34 @@ export default function Dashboard() {
   if (status === 'loading' || !session) {
     return <div className="flex items-center justify-center min-h-screen"><p className="text-gray-500">Caricamento...</p></div>;
   }
+
+  const [telegramInput, setTelegramInput] = useState('');
+  const [telegramMsg, setTelegramMsg] = useState('');
+  const [telegramLoading, setTelegramLoading] = useState(false);
+
+  const linkTelegram = async () => {
+    if (!telegramInput.trim()) return;
+    setTelegramLoading(true);
+    setTelegramMsg('');
+    try {
+      const res = await fetch('/api/user/link-telegram', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ telegramId: telegramInput.trim() }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setTelegramMsg(data.message);
+        // Refresh profile to update premium status
+        fetch('/api/user/profile').then(r => r.json()).then(setProfile).catch(() => {});
+      } else {
+        setTelegramMsg(`❌ ${data.error}`);
+      }
+    } catch {
+      setTelegramMsg('❌ Errore di connessione');
+    }
+    setTelegramLoading(false);
+  };
 
   const todayQuestions = questions.filter(q => new Date(q.createdAt).toDateString() === new Date().toDateString()).length;
   const userName = profile?.name || session.user?.name || 'Utente';
@@ -135,6 +164,50 @@ export default function Dashboard() {
           </div>
           <div className="px-6 py-4 border-t border-gray-100">
             <Link href="/documenti" className="text-blue-700 text-sm font-medium hover:underline">+ Carica nuovo documento</Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Telegram Link Section */}
+      <div className="mt-8 bg-white rounded-xl border border-gray-200 p-6">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
+            <span className="text-2xl">✈️</span>
+          </div>
+          <div className="flex-1">
+            <h2 className="font-bold text-gray-900 mb-1">Collega il tuo account Telegram</h2>
+            {profile?.telegramId ? (
+              <div>
+                <p className="text-sm text-green-600 mb-1">✅ Account collegato (ID: {profile.telegramId})</p>
+                <p className="text-xs text-gray-400">
+                  {profile.piano === 'premium'
+                    ? '💎 Sei Premium — tutte le funzionalità sono sbloccate!'
+                    : 'Per sbloccare Premium, attiva l\'abbonamento su @Taxami_bot'}
+                </p>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm text-gray-500 mb-3">
+                  Se sei un utente <strong>Premium</strong> su Telegram (@Taxami_bot), inserisci il tuo Telegram ID per sbloccare le funzionalità Premium anche sul sito.
+                  <br />
+                  <span className="text-xs text-gray-400">Per trovare il tuo ID, scrivi <code className="bg-gray-100 px-1 rounded">/start</code> a <a href="https://t.me/userinfobot" className="text-blue-600 hover:underline" target="_blank" rel="noopener">@userinfobot</a> su Telegram.</span>
+                </p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={telegramInput}
+                    onChange={(e) => setTelegramInput(e.target.value)}
+                    placeholder="Es. 123456789"
+                    className="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
+                  />
+                  <button onClick={linkTelegram} disabled={telegramLoading || !telegramInput.trim()}
+                    className="px-4 py-2 bg-blue-700 text-white rounded-lg text-sm font-medium hover:bg-blue-800 transition-colors disabled:opacity-50">
+                    {telegramLoading ? 'Collego...' : 'Collega'}
+                  </button>
+                </div>
+                {telegramMsg && <p className={`text-sm mt-2 ${telegramMsg.startsWith('❌') ? 'text-red-600' : 'text-green-600'}`}>{telegramMsg}</p>}
+              </>
+            )}
           </div>
         </div>
       </div>
