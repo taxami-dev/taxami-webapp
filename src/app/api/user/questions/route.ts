@@ -47,7 +47,14 @@ async function searchWeb(query: string): Promise<string> {
 }
 
 async function callAI(prompt: string, isPremium: boolean, webContext: string): Promise<string> {
-  const systemWithContext = SYSTEM_PROMPT + (webContext ? `\n\nUSA queste informazioni aggiornate per rispondere:\n${webContext}` : '');
+  const premiumInstructions = isPremium ? `\n\nQUESTO UTENTE È PREMIUM — RISPONDI IN MODO APPROFONDITO:
+- Fornisci risposte dettagliate e complete con esempi pratici
+- Cita articoli di legge specifici, commi, decreti
+- Includi calcoli numerici se pertinenti
+- Suggerisci strategie fiscali e ottimizzazioni
+- Segnala scadenze rilevanti
+- Se utile, menziona giurisprudenza o prassi dell'Agenzia delle Entrate` : '';
+  const systemWithContext = SYSTEM_PROMPT + premiumInstructions + (webContext ? `\n\nUSA queste informazioni aggiornate per rispondere:\n${webContext}` : '');
 
   const messages = [
     { role: 'system', content: systemWithContext },
@@ -59,7 +66,7 @@ async function callAI(prompt: string, isPremium: boolean, webContext: string): P
       const res = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${process.env.OPENAI_API_KEY}` },
-        body: JSON.stringify({ model: 'gpt-4o', messages, max_tokens: 1500, temperature: 0.3 }),
+        body: JSON.stringify({ model: 'gpt-4o', messages, max_tokens: 2500, temperature: 0.3 }),
       });
       const data = await res.json();
       if (data.choices?.[0]?.message?.content) return data.choices[0].message.content;
