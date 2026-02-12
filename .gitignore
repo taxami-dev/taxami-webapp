@@ -42,3 +42,5 @@ next-env.d.ts
 dev.db
 .env.local
 uploads/
+prisma/dev.db
+uploads/
