@@ -1,7 +1,6 @@
 {
   "build": {
     "env": {
-      "DATABASE_URL": "file:./dev.db",
       "NEXTAUTH_SECRET": "taxami-build-secret"
     }
   }
