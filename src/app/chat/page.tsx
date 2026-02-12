@@ -1,8 +1,9 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
+import { Suspense } from 'react';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -10,27 +11,43 @@ interface Message {
   time: string;
 }
 
-const suggestions = [
+const allSuggestions = [
   { icon: '📋', text: 'Quali sono i requisiti per il regime forfetario 2026?' },
   { icon: '📅', text: 'Quando scade la dichiarazione IVA?' },
   { icon: '💰', text: 'Come funziona la rottamazione quinquies?' },
   { icon: '🏠', text: 'Posso detrarre le spese di ristrutturazione?' },
+  { icon: '🧾', text: 'Come funziona la fatturazione elettronica?' },
+  { icon: '🏢', text: 'Quali sono gli adempimenti per aprire una SRL?' },
+  { icon: '👥', text: 'Come funzionano i contributi INPS per gli artigiani?' },
+  { icon: '🎯', text: 'Quali bonus edilizi sono ancora attivi nel 2026?' },
+  { icon: '📊', text: 'Come si calcola l\'IRPEF con il regime ordinario?' },
+  { icon: '💼', text: 'Quali sono i vantaggi del regime OSS per l\'e-commerce?' },
+  { icon: '📒', text: 'Quando conviene passare dal forfetario all\'ordinario?' },
+  { icon: '⚖️', text: 'Come funziona la cessione del credito d\'imposta?' },
 ];
+
+function getRandomSuggestions(count: number) {
+  const shuffled = [...allSuggestions].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
 
 function timeNow() {
   return new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 }
 
-export default function Chat() {
+function ChatInner() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', text: 'Ciao! 👋 Sono **Taxami**, il tuo consulente fiscale AI dello **Studio Di Sabato e Partners**.\n\nCome posso aiutarti oggi?', time: timeNow() },
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [remaining, setRemaining] = useState<number | null>(null);
+  const [suggestions] = useState(() => getRandomSuggestions(4));
   const bottomRef = useRef<HTMLDivElement>(null);
+  const autoSentRef = useRef(false);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
@@ -41,6 +58,17 @@ export default function Chat() {
       }).catch(() => {});
     }
   }, [session]);
+
+  // Auto-send question from URL param ?q=
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (q && !autoSentRef.current && status === 'authenticated') {
+      autoSentRef.current = true;
+      // Small delay to let the component mount
+      setTimeout(() => sendMessage(q), 500);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, status]);
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || loading) return;
@@ -186,5 +214,13 @@ export default function Chat() {
         <p className="text-[11px] text-slate-400 mt-2 text-center">Le risposte AI hanno carattere informativo e non sostituiscono la consulenza professionale.</p>
       </div>
     </div>
+  );
+}
+
+export default function Chat() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-screen"><p className="text-slate-400">Caricamento chat...</p></div>}>
+      <ChatInner />
+    </Suspense>
   );
 }
