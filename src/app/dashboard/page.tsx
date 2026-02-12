@@ -24,11 +24,11 @@ interface Doc {
 }
 
 const scadenze = [
-  { date: '16 Mar 2025', title: 'Versamento IVA mensile', status: 'urgente' },
-  { date: '31 Mar 2025', title: 'Comunicazione liquidazioni periodiche', status: 'prossima' },
-  { date: '30 Apr 2025', title: 'Dichiarazione IVA annuale', status: 'prossima' },
-  { date: '30 Giu 2025', title: 'Saldo IRPEF + primo acconto', status: 'futura' },
-  { date: '30 Set 2025', title: 'Invio Modello 730', status: 'futura' },
+  { date: '16 Feb 2026', title: 'Versamento IVA mensile', status: 'urgente' },
+  { date: '16 Mar 2026', title: 'Versamento IVA mensile', status: 'prossima' },
+  { date: '31 Mar 2026', title: 'Comunicazione liquidazioni periodiche', status: 'prossima' },
+  { date: '30 Apr 2026', title: 'Dichiarazione IVA annuale', status: 'futura' },
+  { date: '30 Giu 2026', title: 'Saldo IRPEF + primo acconto', status: 'futura' },
 ];
 
 const statusColor: Record<string, string> = {
@@ -79,7 +79,7 @@ export default function Dashboard() {
         {[
           { label: 'Domande oggi', value: `${todayQuestions}/7`, icon: '💬', sub: `Piano ${profile?.piano || 'free'}` },
           { label: 'Documenti caricati', value: String(profile?._count?.documents || documents.length), icon: '📄', sub: `${documents.length} totali` },
-          { label: 'Prossima scadenza', value: '16 Mar', icon: '📅', sub: 'IVA mensile' },
+          { label: 'Prossima scadenza', value: '16 Feb', icon: '📅', sub: 'IVA mensile' },
           { label: 'Piano attivo', value: profile?.piano === 'premium' ? 'Premium' : 'Free', icon: '⭐', sub: profile?.piano === 'premium' ? 'Piano attivo' : 'Passa a Premium' },
         ].map(card => (
           <div key={card.label} className="bg-white rounded-xl border border-gray-200 p-5">

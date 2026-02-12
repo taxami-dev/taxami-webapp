@@ -90,6 +90,11 @@ export default function Login() {
             <button type="submit" disabled={loading} className="w-full py-3 bg-blue-700 text-white font-medium rounded-lg hover:bg-blue-800 transition-colors disabled:opacity-50">
               {loading ? 'Caricamento...' : isLogin ? 'Accedi' : 'Crea account'}
             </button>
+            {isLogin && (
+              <div className="text-center mt-3">
+                <Link href="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">Password dimenticata?</Link>
+              </div>
+            )}
           </form>
         </div>
 

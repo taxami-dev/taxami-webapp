@@ -32,6 +32,14 @@ model Document {
   createdAt DateTime @default(now())
 }
 
+model PasswordReset {
+  id      String   @id @default(cuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+  createdAt DateTime @default(now())
+}
+
 model Question {
   id        String   @id @default(cuid())
   text      String
