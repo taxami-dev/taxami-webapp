@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import FiscalProfileForm from '@/components/FiscalProfileForm';
 
 interface Profile {
   name: string | null;
@@ -164,6 +165,20 @@ export default function Dashboard() {
           </div>
           <div className="px-6 py-4 border-t border-gray-100">
             <Link href="/documenti" className="text-blue-700 text-sm font-medium hover:underline">+ Carica nuovo documento</Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Fiscal Profile Section */}
+      <div className="mt-8 bg-white rounded-xl border border-gray-200 p-6">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
+            <span className="text-2xl">📋</span>
+          </div>
+          <div className="flex-1">
+            <h2 className="font-bold text-gray-900 mb-1">Profilo Fiscale</h2>
+            <p className="text-sm text-gray-500 mb-4">Compila il tuo profilo per ricevere risposte AI personalizzate al tuo regime e settore.</p>
+            <FiscalProfileForm />
           </div>
         </div>
       </div>

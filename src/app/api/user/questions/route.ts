@@ -14,7 +14,8 @@ REGOLE FONDAMENTALI:
 5. USA SEMPRE le informazioni di contesto fornite dal web search per dare risposte aggiornate.
 6. Se il contesto web fornisce informazioni recenti, USALE e citale.
 7. Non dire MAI che qualcosa "non esiste" se il contesto web lo menziona.
-8. Anno corrente: 2026.`;
+8. Anno corrente: 2026.
+9. CITAZIONI NORMATIVE OBBLIGATORIE: per OGNI affermazione fiscale, cita la fonte tra parentesi es. (Art. 1 co. 54, L. 190/2014). Se la fonte viene dal web, citala.`;
 
 const FREE_DAILY_LIMIT = 7;
 
@@ -133,10 +134,26 @@ export async function POST(req: Request) {
     }
   }
 
+  // Get user fiscal profile for personalized answers
+  const userProfile = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { regimeFiscale: true, codiceAteco: true, settoreAttivita: true, annoApertura: true },
+  });
+
+  let profileContext = '';
+  if (userProfile?.regimeFiscale || userProfile?.codiceAteco) {
+    profileContext = '\n\nPROFILO FISCALE UTENTE:';
+    if (userProfile.regimeFiscale) profileContext += `\n- Regime: ${userProfile.regimeFiscale}`;
+    if (userProfile.codiceAteco) profileContext += `\n- Codice ATECO: ${userProfile.codiceAteco}`;
+    if (userProfile.settoreAttivita) profileContext += `\n- Settore: ${userProfile.settoreAttivita}`;
+    if (userProfile.annoApertura) profileContext += `\n- Anno apertura: ${userProfile.annoApertura}`;
+    profileContext += '\nPersonalizza la risposta in base a questo profilo.';
+  }
+
   // Search web for current context
   const webContext = await searchWeb(text);
 
-  const answer = await callAI(text, piano === 'premium', webContext);
+  const answer = await callAI(text, piano === 'premium', webContext + profileContext);
   const question = await prisma.question.create({
     data: { text, answer, userId },
   });

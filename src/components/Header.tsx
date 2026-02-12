@@ -8,9 +8,9 @@ export default function Header() {
   const links = [
     { href: '/', label: 'Home' },
     { href: '/approfondimenti', label: 'Approfondimenti' },
-    { href: '/chat', label: 'Consulenza AI' },
-    { href: '/documenti', label: 'Documenti' },
-    { href: '/pricing', label: 'Prezzi' },
+    { href: '/simulatore', label: 'Simulatore' },
+    { href: '/chat', label: 'Chat AI' },
+    { href: '/pricing', label: 'Pricing' },
     { href: '/dashboard', label: 'Dashboard' },
   ];
 

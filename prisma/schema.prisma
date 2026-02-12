@@ -15,6 +15,10 @@ model User {
   partitaIva       String?
   piano            String     @default("free")
   telegramId       String?    @unique
+  regimeFiscale    String?    // forfetario, ordinario, semplificato
+  codiceAteco      String?
+  settoreAttivita  String?
+  annoApertura     Int?
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
   documents        Document[]
